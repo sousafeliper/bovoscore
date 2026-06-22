@@ -182,3 +182,106 @@ def get_all_match_events(match_id: int):
         {"_id": 0}
     ))
     return events
+
+# =========================================================
+# ROTAS DO SQL EXPLORER (A PONTE NOSQL -> SQL)
+# =========================================================
+
+@app.get("/api/explorer/teams")
+def get_all_teams():
+    cursor = pg_conn.cursor()
+    try:
+        # Removido o 'team_short_name' para não quebrar a consulta no seu banco
+        cursor.execute("SELECT team_api_id, team_long_name FROM team ORDER BY team_long_name LIMIT 100")
+        teams = cursor.fetchall()
+        
+        # O Python agora monta o JSON apenas com ID e Nome (t[0] e t[1])
+        return [{"id": t[0], "name": t[1]} for t in teams]
+    except Exception as e:
+        pg_conn.rollback()
+        return {"error": str(e)}
+    finally:
+        cursor.close()
+
+@app.get("/api/explorer/teams/{team_id}/players")
+def get_team_players(team_id: int):
+    try:
+        # 1. Busca as escalações reais daquele time no MONGODB (Garante precisão)
+        events = mongo_db.match_events.find({"type.name": "Starting XI", "team.id": team_id})
+        statsbomb_names = set()
+        
+        for e in events:
+            for p in e["tactics"]["lineup"]:
+                statsbomb_names.add(p["player"]["name"])
+        
+        if not statsbomb_names:
+            return {"error": "Elenco não localizado nas partidas."}
+        
+        # 2. Faz o 'De/Para' com o POSTGRESQL usando processamento de texto
+        cursor = pg_conn.cursor()
+        matched_players = []
+        
+        for sb_name in statsbomb_names:
+            parts = sb_name.split()
+            # Pega o primeiro e segundo nome para máxima chance de acerto no Kaggle (Ex: "Keylor%Navas%")
+            if len(parts) >= 2:
+                search_str = f"{parts[0]}%{parts[1]}%"
+            else:
+                search_str = f"{sb_name}%"
+            
+            cursor.execute("SELECT player_api_id, player_name FROM player WHERE player_name ILIKE %s LIMIT 1", (search_str,))
+            row = cursor.fetchone()
+            
+            if row:
+                matched_players.append({"id": row[0], "name": row[1]})
+            else:
+                # Fallback: Tenta só pelo primeiro nome se o nome completo for muito diferente
+                cursor.execute("SELECT player_api_id, player_name FROM player WHERE player_name ILIKE %s LIMIT 1", (f"{parts[0]}%",))
+                row_fallback = cursor.fetchone()
+                if row_fallback:
+                    matched_players.append({"id": row_fallback[0], "name": row_fallback[1]})
+        
+        cursor.close()
+        
+        # Remove eventuais duplicatas e retorna
+        final_list = {p['id']: p for p in matched_players}.values()
+        return list(final_list)
+        
+    except Exception as e:
+        pg_conn.rollback()
+        return {"error": str(e)}
+
+@app.get("/api/explorer/players/{player_id}")
+def get_player_attributes(player_id: int):
+    cursor = pg_conn.cursor()
+    try:
+        query = """
+            SELECT player_name, birthday, height, weight 
+            FROM player 
+            WHERE player_api_id = %s
+        """
+        cursor.execute(query, (player_id,))
+        p = cursor.fetchone()
+        
+        if p:
+            # CONVERSÃO DEFINITIVA DO PESO (Libras para Quilos)
+            # A base do Kaggle está em 'lbs'. 1 libra = 0.453592 kg
+            peso_lbs = p[3]
+            peso_kg = round(peso_lbs * 0.453592, 1) if peso_lbs else "N/A"
+            
+            # Altura já está em cm, apenas arredondamos
+            altura_cm = round(p[2]) if p[2] else "N/A"
+
+            return {
+                "name": p[0], 
+                "birthday": p[1], 
+                "height": altura_cm, 
+                "weight": peso_kg
+            }
+            
+        return {"error": "Jogador não encontrado no Banco Relacional."}
+    except Exception as e:
+        pg_conn.rollback()
+        return {"error": str(e)}
+    finally:
+        cursor.close()

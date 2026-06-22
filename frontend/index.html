@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BovoScore</title>
+    <title>BovoScore - Advanced</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -15,6 +15,16 @@
             <p class="text-xs text-slate-400 mt-1">Integração PostgreSQL + MongoDB</p>
         </div>
         <div class="p-4 flex-1 overflow-y-auto">
+            <nav class="mb-8 space-y-3">
+                <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Menu Principal</h2>
+                <a href="index.html" class="block w-full text-left bg-blue-600 text-white transition p-3 rounded text-sm font-medium shadow-md">
+                    <i class="fa-solid fa-futbol mr-2"></i> Match Center (NoSQL)
+                </a>
+                <a href="sql.html" class="block w-full text-left bg-slate-700 hover:bg-slate-600 text-slate-300 transition p-3 rounded text-sm font-medium border border-slate-600 shadow-sm">
+                    <i class="fa-solid fa-database mr-2"></i> SQL Explorer (Postgres)
+                </a>
+            </nav>
+            <hr class="border-slate-700 mb-6">
             <div class="mb-8">
                 <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Pesquisar Jogador (SQL)</h2>
                 <div class="relative">
@@ -38,8 +48,14 @@
                 <span class="text-xs text-slate-400">Real Madrid</span>
             </div>
             <div class="text-center px-8 bg-slate-900 py-3 rounded-lg border border-slate-700 shadow-inner">
-                <div class="text-4xl font-black text-white tracking-widest"><span id="homeScore" class="text-green-400">0</span> - <span id="awayScore" class="text-green-400">0</span></div>
-                <span class="text-[10px] text-slate-500 uppercase tracking-widest">Calculado via NoSQL</span>
+                <div class="text-4xl font-black text-white tracking-widest flex items-baseline justify-center gap-2">
+                    <span id="homeScore" class="text-green-400">0</span>
+                    <span id="homeXG" class="text-sm text-slate-400 font-normal" title="Expected Goals (xG)">(0.0)</span>
+                    <span class="text-slate-500 mx-2">-</span>
+                    <span id="awayScore" class="text-green-400">0</span>
+                    <span id="awayXG" class="text-sm text-slate-400 font-normal" title="Expected Goals (xG)">(0.0)</span>
+                </div>
+                <span class="text-[10px] text-slate-500 uppercase tracking-widest">Gols e (xG) via NoSQL</span>
             </div>
             <div class="text-center w-1/3">
                 <h2 id="awayTeam" class="text-2xl font-bold text-yellow-100">Visitante</h2>
@@ -62,13 +78,12 @@
                     <p id="statPasses" class="text-2xl font-black text-white">0</p>
                 </div>
                 <div class="bg-slate-800 p-4 rounded-lg border border-slate-700 shadow">
-                    <h3 class="text-slate-400 text-xs uppercase font-bold mb-1"><i class="fa-solid fa-bolt mr-2"></i>Aproveitamento</h3>
+                    <h3 class="text-slate-400 text-xs uppercase font-bold mb-1"><i class="fa-solid fa-bolt mr-2"></i>Aproveitamento Passes</h3>
                     <p id="statPassAcc" class="text-2xl font-black text-green-400">0%</p>
                 </div>
             </div>
 
             <div class="grid grid-cols-3 gap-6 h-[500px]">
-                
                 <div class="col-span-1 flex flex-col gap-4 overflow-hidden">
                     <div class="bg-slate-800 rounded-lg border border-slate-700 shadow flex-1 flex flex-col overflow-hidden">
                         <h3 class="text-sm font-bold bg-slate-900 p-3 border-b border-slate-700 text-blue-400"><i class="fa-solid fa-users mr-2"></i>XI Real Madrid</h3>
@@ -85,16 +100,22 @@
                         <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300"><i class="fa-solid fa-map-location-dot mr-2"></i>Análise Espacial</h3>
                         <select id="mapFilter" onchange="renderActiveMap()" class="bg-slate-800 border border-slate-600 text-white text-sm rounded px-3 py-1 font-bold focus:outline-none focus:border-blue-500 cursor-pointer shadow">
                             <optgroup label="Mandante">
-                                <option value="shots_home">🎯 Finalizações</option>
-                                <option value="key_passes_home">👟 Passes Chave e Assistências</option>
+                                <option value="xg_home">🎯 Chutes e xG</option>
+                                <option value="passflow_home">🕸️ Fluxo de Passes</option>
+                                <option value="key_passes_home">👟 Passes Chave/Assistências</option>
+                                <option value="carries_home">🏃 Conduções (Carries)</option>
+                                <option value="pressures_home">🔥 Zonas de Pressão</option>
                                 <option value="defense_home">🛡️ Ações Defensivas</option>
-                                <option value="fouls_home">⚠️ Faltas Cometidas</option>
+                                <option value="turnovers_home">❌ Perdas de Posse</option>
                             </optgroup>
                             <optgroup label="Visitante">
-                                <option value="shots_away">🎯 Finalizações</option>
-                                <option value="key_passes_away">👟 Passes Chave e Assistências</option>
+                                <option value="xg_away">🎯 Chutes e xG</option>
+                                <option value="passflow_away">🕸️ Fluxo de Passes</option>
+                                <option value="key_passes_away">👟 Passes Chave/Assistências</option>
+                                <option value="carries_away">🏃 Conduções (Carries)</option>
+                                <option value="pressures_away">🔥 Zonas de Pressão</option>
                                 <option value="defense_away">🛡️ Ações Defensivas</option>
-                                <option value="fouls_away">⚠️ Faltas Cometidas</option>
+                                <option value="turnovers_away">❌ Perdas de Posse</option>
                             </optgroup>
                         </select>
                     </div>

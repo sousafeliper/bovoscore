@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BovoScore - SQL Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-900 text-slate-100 h-screen flex overflow-hidden font-sans">
+
+    <aside class="w-72 bg-slate-800 flex flex-col shadow-2xl border-r border-slate-700">
+        <div class="p-6 border-b border-slate-700">
+            <h1 class="text-2xl font-black text-blue-400"><i class="fa-solid fa-chart-line mr-2"></i>BovoScore</h1>
+            <p class="text-xs text-slate-400 mt-1">Módulo: PostgreSQL</p>
+        </div>
+        <div class="p-4 flex-1">
+            <nav class="space-y-3">
+                <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Navegação</h2>
+                <a href="index.html" class="block w-full text-left bg-slate-700 hover:bg-slate-600 text-slate-300 transition p-3 rounded text-sm font-medium border border-slate-600 shadow-sm">
+                    <i class="fa-solid fa-futbol mr-2 text-slate-400"></i> Match Center (NoSQL)
+                </a>
+                <a href="sql.html" class="block w-full text-left bg-blue-600 text-white transition p-3 rounded text-sm font-medium shadow-md">
+                    <i class="fa-solid fa-database mr-2"></i> SQL Explorer (Postgres)
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full bg-slate-900 p-8">
+        <header class="mb-6">
+            <h2 class="text-3xl font-black text-white"><i class="fa-solid fa-sitemap text-blue-500 mr-3"></i>Diretório Relacional</h2>
+            <p class="text-slate-400 mt-2">Navegue pelos dados cadastrais: Selecione um time, escolha um jogador e visualize seus atributos físicos.</p>
+        </header>
+
+        <div class="flex-1 grid grid-cols-3 gap-6 min-h-0">
+            
+            <div class="bg-slate-800 rounded-lg border border-slate-700 shadow flex flex-col overflow-hidden">
+                <div class="bg-slate-900 p-4 border-b border-slate-700">
+                    <h3 class="font-bold text-white"><i class="fa-solid fa-shield-halved mr-2 text-blue-400"></i>Clubes</h3>
+                </div>
+                <div class="flex-1 overflow-y-auto p-2 space-y-1" id="teamsList">
+                    <p class="text-center text-slate-500 mt-10"><i class="fa-solid fa-circle-notch fa-spin"></i> Buscando...</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 rounded-lg border border-slate-700 shadow flex flex-col overflow-hidden">
+                <div class="bg-slate-900 p-4 border-b border-slate-700">
+                    <h3 class="font-bold text-white"><i class="fa-solid fa-users mr-2 text-yellow-400"></i>Elenco</h3>
+                </div>
+                <div class="flex-1 overflow-y-auto p-2 space-y-1" id="playersList">
+                    <div class="h-full flex items-center justify-center text-slate-500 text-sm">
+                        Selecione um clube ao lado.
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 rounded-lg border border-slate-700 shadow flex flex-col overflow-hidden relative">
+                <div class="bg-slate-900 p-4 border-b border-slate-700">
+                    <h3 class="font-bold text-white"><i class="fa-solid fa-id-card mr-2 text-green-400"></i>Perfil Físico</h3>
+                </div>
+                <div class="flex-1 p-6" id="playerProfile">
+                    <div class="h-full flex items-center justify-center text-slate-500 text-sm">
+                        Selecione um jogador.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="sql.js"></script>
+</body>
+</html>
