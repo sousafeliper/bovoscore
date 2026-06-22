@@ -1,14 +1,13 @@
 # BovoScore ⚽📊
 
-**Projeto Final da unidade curricular de Sistemas de Bases de Dados** *Instituto de Informática - Universidade Federal de Goiás (UFG)*
+**Projeto Final da disciplina de Banco de Dados** | *Bacharelado em Inteligência Artificial - Instituto de Informática - Universidade Federal de Goiás (UFG)*
 
-O **BovoScore** é uma plataforma analítica de inteligência desportiva concebida para processar e visualizar dados de futebol em alta granularidade. O projeto tem como principal objetivo demonstrar a implementação prática de uma **Arquitetura de Persistência Poliglota**, integrando dados de fontes distintas e com naturezas estruturais diferentes.
+A **BovoScore** é uma plataforma de análise de informações e eventos de futebol. O projeto tem como principal objetivo demonstrar a implementação prática de uma **Arquitetura de Persistência Poliglota**, integrando dados de fontes distintas e com naturezas estruturais diferentes.
 
----
 
 ## Arquitetura Poliglota:
 
-O futebol moderno gera métricas que exigem diferentes abordagens de armazenamento. Para resolver este problema, o BovoScore divide as suas responsabilidades em dois ambientes distintos na nuvem:
+O futebol gera métricas que exigem diferentes abordagens de armazenamento. Para resolver este problema, a BovoScore divide as suas responsabilidades em dois ambientes distintos na nuvem:
 
 1. **PostgreSQL (Google Cloud SQL) - O Dicionário Relacional:**
    * **O que armazena:** Dados estruturados, altamente relacionados e de mudança pouco frequente (Ligas, Clubes, Ficha Física dos Jogadores e Calendário de Jogos).
@@ -17,12 +16,12 @@ O futebol moderno gera métricas que exigem diferentes abordagens de armazenamen
 
 2. **MongoDB (Atlas) - O Motor de Eventos (NoSQL):**
    * **O que armazena:** A torrente massiva de dados semiestruturados (*Play-by-Play*). Cada jogo gera cerca de 4.000 documentos JSON detalhando passes, remates e coordenadas espaciais (X/Y).
-   * **Origem dos Dados:** *StatsBomb Open Data* (Focando numa temporada do Real Madrid como visitado).
+   * **Origem dos Dados:** *StatsBomb Open Data* (Focando numa temporada do Real Madrid como mandante).
    * **Justificação:** O polimorfismo do NoSQL permite que um evento de "Remate" possua atributos de *Expected Goals* (xG), enquanto um evento de "Passe" possua ângulos e distâncias, tudo na mesma coleção sem gerar esquemas com colunas nulas. O módulo **Match Center** lê estes documentos para renderizar mapas de calor e atualizar o marcador dinamicamente.
 
 ---
 
-## 🛠️ Stack Tecnológica
+## Stack Tecnológica:
 
 * **Backend:** Python 3.10+, FastAPI, Uvicorn, Psycopg2, PyMongo.
 * **Frontend:** HTML5, JavaScript Vanilla (Canvas API para mapas táticos), Tailwind CSS.
@@ -30,7 +29,7 @@ O futebol moderno gera métricas que exigem diferentes abordagens de armazenamen
 
 ---
 
-## 🚀 Instruções de Execução
+## Instruções de Execução:
 
 Siga os passos abaixo para testar a aplicação localmente. 
 
